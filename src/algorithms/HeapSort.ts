@@ -12,10 +12,7 @@ export default class HeapSort extends Sort {
 
 		// sort array by extracting every root element
 		for (let i = length - 1; i > 0; i--) {
-			this.callbacks.swapCallback?.(arr[i].id, arr[0].id);
-			const temp = arr[i];
-			arr[i] = arr[0];
-			arr[0] = temp;
+			this.swap(arr, i, 0);
 
 			this.heapify(arr, i, 0);
 		}
@@ -43,10 +40,7 @@ export default class HeapSort extends Sort {
 		}
 
 		if (largestI !== largestIndex) {
-			this.callbacks.swapCallback?.(arr[largestI].id, arr[largestIndex].id);
-			const temp = arr[largestI];
-			arr[largestI] = arr[largestIndex];
-			arr[largestIndex] = temp;
+			this.swap(arr, largestI, largestIndex);
 
 			this.heapify(arr, length, largestI);
 		}
