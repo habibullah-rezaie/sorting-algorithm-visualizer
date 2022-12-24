@@ -208,23 +208,6 @@ function SortingForm({
 				}
 			}}
 		>
-			<Button
-				className="h-fit py-1 rounded-md to-blue-500"
-				variant="contained"
-				type="submit"
-				style={{ color: "white", backgroundColor: "#3b82f6" }}
-				disabled={disableSubmit || algo === ""}
-			>
-				Sort
-			</Button>
-			<Button
-				className="h-fit py-1 rounded-md to-blue-500"
-				variant="contained"
-				onClick={onShuffle}
-				style={{ color: "white", backgroundColor: "#3b82f6" }}
-			>
-				Shuffle
-			</Button>
 			<div className="w-fit flex flex-row space-x-3 items-center">
 				<Typography id="slider label" gutterBottom className={"text-black/60"}>
 					Array Length
@@ -261,6 +244,23 @@ function SortingForm({
 					<MenuItem value={"SELECTION_SORT"}>Selection Sort</MenuItem>
 				</Select>
 			</FormControl>
+			<Button
+				className="h-fit py-1 rounded-md"
+				variant="contained"
+				type="submit"
+				style={{ color: "white", backgroundColor: "#3b82f6" }}
+				disabled={disableSubmit || algo === ""}
+			>
+				Sort
+			</Button>
+			<Button
+				className="h-fit py-1 rounded-md"
+				variant="contained"
+				onClick={onShuffle}
+				style={{ color: "white", backgroundColor: "#f87171" }}
+			>
+				Shuffle
+			</Button>
 		</form>
 	);
 }
