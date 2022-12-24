@@ -3,7 +3,8 @@ export type ComparisonResult = "equal" | "greater" | "less";
 export type CompareCallback = (
 	aId: string,
 	bId: string,
-	status: ComparisonResult
+	status: ComparisonResult,
+	willSwap: boolean
 ) => void;
 
 export type ArrItem = {
@@ -17,39 +18,39 @@ export default class Comparator {
 		this.callback = callback;
 	}
 
-	lessThan(a: ArrItem, b: ArrItem) {
+	lessThan(a: ArrItem, b: ArrItem, willSwap = false) {
 		if (a.val < b.val) {
-			this.callback?.(a.id, b.id, "less");
+			this.callback?.(a.id, b.id, "less", willSwap);
 			return true;
 		}
 	}
 
-	greaterThan(a: ArrItem, b: ArrItem) {
+	greaterThan(a: ArrItem, b: ArrItem, willSwap = false) {
 		if (a.val > b.val) {
-			this.callback?.(a.id, b.id, "greater");
+			this.callback?.(a.id, b.id, "greater", willSwap);
 			return true;
 		}
 	}
 
-	equal(a: ArrItem, b: ArrItem) {
+	equal(a: ArrItem, b: ArrItem, willSwap = false) {
 		if (a.val === b.val) {
-			this.callback?.(a.id, b.id, "equal");
+			this.callback?.(a.id, b.id, "equal", willSwap);
 			return true;
 		}
 	}
 
-	greaterThanEqual(a: ArrItem, b: ArrItem) {
+	greaterThanEqual(a: ArrItem, b: ArrItem, willSwap = false) {
 		if (a.val >= b.val) {
-			if (a.val === b.val) this.callback?.(a.id, b.id, "equal");
-			else this.callback?.(a.id, b.id, "greater");
+			if (a.val === b.val) this.callback?.(a.id, b.id, "equal", willSwap);
+			else this.callback?.(a.id, b.id, "greater", willSwap);
 			return true;
 		}
 	}
 
-	lessThanEqual(a: ArrItem, b: ArrItem) {
+	lessThanEqual(a: ArrItem, b: ArrItem, willSwap = false) {
 		if (a.val <= b.val) {
-			if (a.val === b.val) this.callback?.(a.id, b.id, "equal");
-			else this.callback?.(a.id, b.id, "less");
+			if (a.val === b.val) this.callback?.(a.id, b.id, "equal", willSwap);
+			else this.callback?.(a.id, b.id, "less", willSwap);
 			return true;
 		}
 	}
