@@ -227,7 +227,9 @@ function SortingForm({
 				</div>
 			</div>
 			<FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
-				<InputLabel id="algoSelctor">Sorting Algorithm</InputLabel>
+				<InputLabel id="algoSelctor" shrink>
+					Sorting Algorithm
+				</InputLabel>
 				<Select
 					labelId="algoSelctor"
 					id="demo-simple-select-standard"
