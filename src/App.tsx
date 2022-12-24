@@ -5,11 +5,14 @@ import {
 	MenuItem,
 	Select,
 	Slider,
+	Typography,
 } from "@mui/material";
 import React from "react";
 import HeapSort from "./algorithms/HeapSort";
 import { MergeSort } from "./algorithms/MergeSort";
-import { Sort } from "./algorithms/Sort";
+import QuickSort from "./algorithms/QuickSort";
+import SelectionSort from "./algorithms/SelectionSort";
+import { Sort, SortCallbacks } from "./algorithms/Sort";
 import "./App.css";
 import Bars from "./components/Bars";
 
@@ -17,22 +20,21 @@ import Bars from "./components/Bars";
 // TODO: change width of bar based on size
 // TODO: set a fixed width for bar section
 
+(window as any).SelectionSort = SelectionSort;
+(window as any).QuickSort = QuickSort;
 export type SorterEvent =
-	| { type: "compare"; aId: string; bId: string }
+	| { type: "compare"; aId: string; bId: string; willSwap: boolean }
 	| { type: "swap"; aId: string; bId: string }
 	| { type: "visit"; id: string }
 	| { type: "move"; id: string; blocks: number };
+
 function App() {
 	const [barsCount, setBarsCount] = React.useState(10);
-	const [speed, setSpeed] = React.useState(0);
 	const [events, setEvents] = React.useState<SorterEvent[]>([]);
 	const [isVisualizing, setIsVisualizing] = React.useState(false);
 	const [randomArr, setRandomArr] = React.useState(() =>
 		getRandNumArr(barsCount)
 	);
-
-	const heapSorter = new HeapSort({});
-	console.log(heapSorter.sort([...randomArr]));
 
 	const barsCountRef = React.useRef(barsCount);
 	React.useEffect(() => {
@@ -43,18 +45,21 @@ function App() {
 	}, [barsCount, isVisualizing]);
 
 	React.useEffect(() => {
-		const id = setTimeout(() => {
-			if (events.length > 0) {
-				const newEvents = [...events];
-				newEvents.shift();
-				setEvents(newEvents);
-			} else {
-				setIsVisualizing(false);
-			}
-		}, speed);
+		if (isVisualizing) {
+			const speed = 530 - barsCount * 3; // every bar means 3 ms
+			const id = setTimeout(() => {
+				if (events.length > 0) {
+					const newEvents = [...events];
+					newEvents.shift();
+					setEvents(newEvents);
+				} else {
+					setIsVisualizing(false);
+				}
+			}, speed);
 
-		return () => clearTimeout(id);
-	}, [events, speed]);
+			return () => clearTimeout(id);
+		}
+	}, [barsCount, events, isVisualizing]);
 
 	React.useEffect(() => {
 		const currentEvent = events["0"];
@@ -95,44 +100,69 @@ function App() {
 		const events: SorterEvent[] = [];
 
 		let sorter: Sort | null = null;
-		if (algo === "MERGE_SORT") {
-			sorter = new MergeSort({
-				compareCallback: (aId, bId, result) => {
-					if (result === "greater") events.push({ type: "compare", aId, bId });
-				},
-				moveCallback: (id, blocks) => {
-					events.push({ type: "move", id, blocks });
-				},
-			});
-		} else if (algo === "HEAP_SORT") {
-			sorter = new HeapSort({
-				compareCallback: (aId, bId, result) => {
-					if (result === "greater") events.push({ type: "compare", aId, bId });
-				},
-				swapCallback: (aId, bId) => {
-					events.push({ type: "swap", aId, bId });
-				},
-			});
+		const defaultCallBacks: SortCallbacks = {
+			compareCallback: (aId, bId, result, willSwap = false) => {
+				events.push({ type: "compare", aId, bId, willSwap });
+			},
+			swapCallback: (aId, bId) => {
+				events.push({ type: "swap", aId, bId });
+			},
+		};
+
+		switch (algo) {
+			case "MERGE_SORT": {
+				sorter = new MergeSort({
+					...defaultCallBacks,
+					moveCallback: (id, blocks) => {
+						events.push({ type: "move", id, blocks });
+					},
+				});
+				break;
+			}
+			case "HEAP_SORT": {
+				sorter = new HeapSort({
+					...defaultCallBacks,
+				});
+
+				break;
+			}
+			case "QUICK_SORT": {
+				sorter = new QuickSort({
+					...defaultCallBacks,
+				});
+				break;
+			}
+			case "SELECTION_SORT": {
+				sorter = new SelectionSort({
+					...defaultCallBacks,
+				});
+				break;
+			}
+			default:
+				break;
 		}
 
 		if (sorter) {
-			sorter.sort(randomArr);
+			const arr = sorter.sort(randomArr);
 			setEvents(events);
 			setIsVisualizing(true);
-			if (events.length > 0) {
-				setSpeed((60 * 1000) / events.length);
-			}
 		}
 	}
 
 	return (
 		<div className="App">
-			<div className="py-2 px-4 border-b-2 border-blue-300 bg-slate-400">
+			<div className="py-2 px-4 bg-green-500">
 				<SortingForm
 					barsCount={barsCount}
-					setBarsCount={setBarsCount}
+					setBarsCount={(count) => {
+						if (!isVisualizing) setBarsCount(count);
+					}}
 					onSort={handleSort}
 					disableSubmit={isVisualizing}
+					onShuffle={() => {
+						setRandomArr(getRandNumArr(barsCount));
+						if (isVisualizing) setIsVisualizing(false);
+					}}
 				/>
 			</div>
 			<div className="mt-5">
@@ -144,18 +174,24 @@ function App() {
 
 export default App;
 
-type SortingAlgorithms = "MERGE_SORT" | "HEAP_SORT";
+type SortingAlgorithms =
+	| "MERGE_SORT"
+	| "HEAP_SORT"
+	| "QUICK_SORT"
+	| "SELECTION_SORT";
 
 function SortingForm({
 	barsCount,
 	setBarsCount,
 	onSort,
 	disableSubmit = false,
+	onShuffle,
 }: {
 	barsCount: number;
-	setBarsCount: React.Dispatch<React.SetStateAction<number>>;
+	setBarsCount: (count: number) => void;
 	onSort(algorith: SortingAlgorithms): void;
 	disableSubmit?: boolean;
+	onShuffle: () => void;
 }) {
 	type AlgoOptions = SortingAlgorithms | "";
 
@@ -163,7 +199,7 @@ function SortingForm({
 
 	return (
 		<form
-			className="w-full flex flex-row justify-between items-center"
+			className="w-full flex flex-row flex-wrap justify-between items-center"
 			onSubmit={(e) => {
 				e.preventDefault();
 
@@ -181,25 +217,36 @@ function SortingForm({
 			>
 				Sort
 			</Button>
-			<div className="w-10">
-				<Slider
-					aria-label="Array Size"
-					value={barsCount}
-					onChange={(e, value) => {
-						if (!(value instanceof Array)) {
-							setBarsCount(value);
-						}
-					}}
-					min={4}
-					max={170}
-				/>
+			<Button
+				className="h-fit py-1 rounded-md to-blue-500"
+				variant="contained"
+				onClick={onShuffle}
+				style={{ color: "white", backgroundColor: "#3b82f6" }}
+			>
+				Shuffle
+			</Button>
+			<div className="w-fit flex flex-row space-x-3 items-center">
+				<Typography id="slider label" gutterBottom className={"text-black/60"}>
+					Array Length
+				</Typography>
+				<div className="w-10">
+					<Slider
+						aria-label="Array Length"
+						value={barsCount}
+						onChange={(_, value) => {
+							if (!(value instanceof Array)) {
+								setBarsCount(value);
+							}
+						}}
+						min={4}
+						max={170}
+					/>
+				</div>
 			</div>
 			<FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
-				<InputLabel id="demo-simple-select-standard-label">
-					Sorting Algorithm
-				</InputLabel>
+				<InputLabel id="algoSelctor">Sorting Algorithm</InputLabel>
 				<Select
-					labelId="demo-simple-select-standard-label"
+					labelId="algoSelctor"
 					id="demo-simple-select-standard"
 					value={algo}
 					onChange={(e) => setAlgo(e.target.value as AlgoOptions)}
@@ -210,6 +257,8 @@ function SortingForm({
 					</MenuItem>
 					<MenuItem value={"MERGE_SORT"}>Merge Sort</MenuItem>
 					<MenuItem value={"HEAP_SORT"}>Heap Sort</MenuItem>
+					<MenuItem value={"QUICK_SORT"}>Quick Sort</MenuItem>
+					<MenuItem value={"SELECTION_SORT"}>Selection Sort</MenuItem>
 				</Select>
 			</FormControl>
 		</form>
