@@ -5,6 +5,7 @@ This web app lets you see how lists get sorted using different sorting algorithm
 ## See Live
 
 Go to this [link](https://sort-algorithms-visualizer.vercel.app/)
+![my new Image](public/screenshot.jpg)
 
 ## Features
 
