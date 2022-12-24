@@ -11,7 +11,7 @@ export type SortCallbacks = {
 	visitingCallback?: (id: string) => void;
 };
 
-export class Sort {
+export abstract class Sort {
 	public callbacks: SortCallbacks;
 	public comparator: Comparator;
 	constructor(originalCallback: SortCallbacks) {
@@ -19,8 +19,8 @@ export class Sort {
 		this.comparator = new Comparator(this.callbacks.compareCallback);
 	}
 
-	sort(arr: ArrItem[]): ArrItem[] {
-		throw new Error("this should be implemented.");
+	abstract sort(arr: ArrItem[]): ArrItem[];
+
 	swap(arr: ArrItem[], i: number, j: number) {
 		const temp = arr[i];
 		arr[i] = arr[j];
