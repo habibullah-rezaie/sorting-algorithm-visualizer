@@ -4,7 +4,8 @@ export type SortCallbacks = {
 	compareCallback?: (
 		leftId: string,
 		rightId: string,
-		status: "equal" | "greater" | "less"
+		status: "equal" | "greater" | "less",
+		willSwap: boolean
 	) => void;
 	swapCallback?: (leftId: string, rightId: string) => void;
 	moveCallback?: (id: string, blocks: number) => void;
