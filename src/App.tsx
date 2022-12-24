@@ -199,7 +199,7 @@ function SortingForm({
 
 	return (
 		<form
-			className="w-full flex flex-row flex-wrap justify-between items-center"
+			className="w-full flex flex-row flex-wrap justify-between items-center space-x-2"
 			onSubmit={(e) => {
 				e.preventDefault();
 
