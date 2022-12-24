@@ -21,5 +21,11 @@ export class Sort {
 
 	sort(arr: ArrItem[]): ArrItem[] {
 		throw new Error("this should be implemented.");
+	swap(arr: ArrItem[], i: number, j: number) {
+		const temp = arr[i];
+		arr[i] = arr[j];
+		arr[j] = temp;
+
+		this.callbacks.swapCallback?.(arr[j].id, arr[i].id);
 	}
 }
