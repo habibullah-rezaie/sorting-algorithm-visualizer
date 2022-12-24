@@ -17,7 +17,8 @@ export class MergeSort extends Sort {
 				this.callbacks.compareCallback?.(
 					leftArr[leftIndex].id,
 					rightArr[rightIndex].id,
-					"greater"
+					"greater",
+					true
 				);
 				this.callbacks.moveCallback?.(
 					rightArr[rightIndex].id,

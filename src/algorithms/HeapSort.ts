@@ -27,14 +27,14 @@ export default class HeapSort extends Sort {
 
 		if (
 			left < length &&
-			this.comparator.greaterThan(arr[left], arr[largestI])
+			this.comparator.greaterThan(arr[left], arr[largestI], true)
 		) {
 			largestI = left;
 		}
 
 		if (
 			right < length &&
-			this.comparator.greaterThan(arr[right], arr[largestI])
+			this.comparator.greaterThan(arr[right], arr[largestI], true)
 		) {
 			largestI = right;
 		}
