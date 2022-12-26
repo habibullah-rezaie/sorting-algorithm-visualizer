@@ -9,11 +9,12 @@ Go to this [link](https://sort-algorithms-visualizer.vercel.app/)
 
 ## Features
 
-- Select between 4 sorting algorithms
+- Select between 5 sorting algorithms
   1. QuickSort
   2. MergeSort
   3. HeapSort
   4. SelectionSort
+  5. BubbleSort
 - You can adjust the speed and number of elements
 - Uses different colors for different events: comparison, swap, movement
 
